@@ -4,21 +4,20 @@ OBJCOPY = llvm-objcopy
 AVD_VER := 3
 AVD_TIER := 1
 
+PAD = 0x12000
+
 # avd-version = 3 in device tree
 ifeq ($(AVD_VER),2)
 PAD = 0xc000
 endif
+
 ifeq ($(AVD_VER),3)
 PAD = 0x10000
 endif
-ifeq ($(AVD_VER),4)
-PAD = 0x12000
-endif
+
 ifeq ($(AVD_VER),5)
 ifeq ($(AVD_TIER),0)
 PAD = 0x10000
-else
-PAD = 0x12000
 endif
 endif
 
