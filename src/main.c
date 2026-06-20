@@ -3,7 +3,7 @@
 typedef volatile unsigned int u32;
 
 #define BIT(nr) (1 << (nr))
-#define m(addr) ((u32 *)(addr))
+#define REG(addr) ((u32 *)(addr))
 
 #if VERSION == 2
 #define SP 0x1000c000
@@ -15,25 +15,25 @@ typedef volatile unsigned int u32;
 #define SP 0x10012000
 #endif
 
-#define NVIC_ISER m(0xe000e100)
+#define NVIC_ISER REG(0xe000e100)
 
 #define MBOX_BASE 0x50010000
 
 /* thanks to https://github.com/ArcaneNibble/m1n1.git */
-#define MBOX_IRQ_ENABLE_0 m(MBOX_BASE + 0x10)
+#define MBOX_IRQ_ENABLE_0 REG(MBOX_BASE + 0x10)
 
-#define MBOX_IRQ_CLEAR_0 m(MBOX_BASE + 0x2c)
+#define MBOX_IRQ_CLEAR_0 REG(MBOX_BASE + 0x2c)
 
-#define MBOX0_STATUS m(MBOX_BASE + 0x50)
-#define MBOX0_SUBMIT m(MBOX_BASE + 0x54)
-#define MBOX0_RETRIEVE m(MBOX_BASE + 0x58)
+#define MBOX0_STATUS REG(MBOX_BASE + 0x50)
+#define MBOX0_SUBMIT REG(MBOX_BASE + 0x54)
+#define MBOX0_RETRIEVE REG(MBOX_BASE + 0x58)
 
-#define MBOX1_STATUS m(MBOX_BASE + 0x5c)
-#define MBOX1_SUBMIT m(MBOX_BASE + 0x60)
-#define MBOX1_RETRIEVE m(MBOX_BASE + 0x64)
+#define MBOX1_STATUS REG(MBOX_BASE + 0x5c)
+#define MBOX1_SUBMIT REG(MBOX_BASE + 0x60)
+#define MBOX1_RETRIEVE REG(MBOX_BASE + 0x64)
 
 /* used to signal boot */
-#define MBOX_FLAG_0 m(MBOX_BASE + 0x90)
+#define MBOX_FLAG_0 REG(MBOX_BASE + 0x90)
 
 #define MBOX0_EMPTY BIT(0)
 #define MBOX0_NOT_EMPTY BIT(1)
@@ -60,9 +60,9 @@ typedef volatile unsigned int u32;
 
 #if VERSION == 2
 /* everything is packed into one register */
-#define DECODE_STATUS(n) m(DECODE_CTRL_BASE + VP_OFFSET)
+#define DECODE_STATUS(n) REG(DECODE_CTRL_BASE + VP_OFFSET)
 #else
-#define DECODE_STATUS(n) m(DECODE_CTRL_BASE + VP_OFFSET + (n * 4))
+#define DECODE_STATUS(n) REG(DECODE_CTRL_BASE + VP_OFFSET + (n * 4))
 #endif
 
 #define DECODE_STATUS_UNK BIT(0)
@@ -286,11 +286,11 @@ void tunable_apply(const struct tunable *tunable)
 	for (int i = 0; i < tunable->sz; ++i) {
 		u32 val, old_val;
 
-		old_val = *m(DECODE_CTRL_BASE + tunable->values[i].offset);
+		old_val = *REG(DECODE_CTRL_BASE + tunable->values[i].offset);
 		val = old_val & ~tunable->values[i].mask;
 		val |= tunable->values[i].value;
 		/* always write */
-		*m(DECODE_CTRL_BASE + tunable->values[i].offset) = val;
+		*REG(DECODE_CTRL_BASE + tunable->values[i].offset) = val;
 	}
 }
 
