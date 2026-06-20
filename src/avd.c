@@ -1,5 +1,5 @@
+#include "avd.h"
 #include "tunable/tunable.h"
-#include "util.h"
 
 #define REG(addr) ((u32 *)(addr))
 
