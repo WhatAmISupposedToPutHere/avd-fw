@@ -70,11 +70,13 @@
 
 void handler(void)
 {
-  u32 ipsr;
+  u32 ipsr, val;
   __asm volatile("mrs %0, ipsr" : "=r"(ipsr));
   u32 irq_num = ipsr & 0x1ff;
 
-  *MBOX1_SUBMIT = 0x10000 | (irq_num < 16 ? 1000 + irq_num : irq_num - 16);
+  val = 0x10000 | (irq_num < 16 ? 1000 + irq_num : irq_num - 16);
+
+  reg_write(MBOX1_SUBMIT, val);
 
   while (1)
     __asm volatile("wfi");
@@ -131,11 +133,11 @@ void clear(unsigned int n, unsigned int status) {
 	volatile u32 *reg = DECODE_STATUS(n);
 #if AVD_VER == 2
 	/* packed into one register each status is shifted 5 up */
-	*reg = status << (n * 5);
-	while (*reg & (status << (n * 5)));
+	reg_write(reg, status << (n * 5));
+	while (reg_read(reg) & (status << (n * 5)));
 #else
-	*reg = status;
-	while (*reg & status);
+	reg_write(reg, status);
+	while (reg_read(reg) & status);
 #endif
 }
 
@@ -143,19 +145,19 @@ void clear(unsigned int n, unsigned int status) {
 static void vpdone(u32 n)
 {
 	clear(n, DECODE_STATUS_DONE);
-	*MBOX1_SUBMIT = 0x100 | n;
+	reg_write(MBOX1_SUBMIT, 0x100 | n);
 }
 
 static void err(u32 n)
 {
 	clear(n, DECODE_STATUS_ERROR);
-	*MBOX1_SUBMIT = n;
+	reg_write(MBOX1_SUBMIT, n);
 }
 
 static void ppdone(u32 n)
 {
 	clear(n, DECODE_STATUS_DONE);
-	*MBOX1_SUBMIT = 0x1000;
+	reg_write(MBOX1_SUBMIT, 0x1000);
 }
 
 #define irq(n) void irq##n(void)
@@ -284,11 +286,11 @@ void tunable_apply(const struct tunable *tunable)
 	for (int i = 0; i < tunable->sz; ++i) {
 		u32 val, old_val;
 
-		old_val = *REG(DECODE_CTRL_BASE + tunable->values[i].offset);
+		old_val = reg_read(REG(DECODE_CTRL_BASE) + tunable->values[i].offset);
 		val = old_val & ~tunable->values[i].mask;
 		val |= tunable->values[i].value;
 		/* always write */
-		*REG(DECODE_CTRL_BASE + tunable->values[i].offset) = val;
+		reg_write(REG(DECODE_CTRL_BASE) + tunable->values[i].offset, val);
 	}
 }
 
@@ -301,7 +303,7 @@ void _start(void)
 
 	__asm volatile("cpsie i");
 
-	*MBOX_FLAG_0 = 1; /* signal boot */
+	reg_write(MBOX_FLAG_0, 1);
 
 	while (1)
 		__asm volatile("wfi");
