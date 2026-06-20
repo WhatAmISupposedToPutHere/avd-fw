@@ -26,6 +26,9 @@ CFLAGS = -Wall -O2 -nostdlib \
 	 -mthumb -mcpu=cortex-m3 --target=arm-none-eabi \
 	 -DAVD_VER=$(AVD_VER) -DAVD_TIER=$(AVD_TIER)
 
+# We need to force a rebuild when AVD_VER and AVD_TIER change
+LAST_BUILT := $(shell echo "$(CFLAGS)" | cmp -s .flags || echo "$(CFLAGS)" > .flags)
+
 NAME = avd-fw-v$(AVD_VER)-t$(AVD_TIER)
 
 OBJECTS := util.o irq.o avd.o
@@ -40,7 +43,7 @@ clean:
 build/$(NAME).elf: $(BUILD_OBJS)
 	$(CC) $(CFLAGS) -T $(LD_SCRIPT) -o $@ $^
 
-build/%.o: src/%.c
+build/%.o: src/%.c .flags
 	mkdir -p "$(dir $@)"
 	$(CC) $(CFLAGS) -c -o $@ $<
 
