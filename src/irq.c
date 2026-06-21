@@ -85,7 +85,7 @@ static void err(u32 n)
 static void ppdone(u32 n)
 {
 	irq_clear(n, DECODE_STATUS_DONE);
-	reg_write(CM3_MBOX1_TX, 0x1000);;
+	reg_write(CM3_MBOX1_TX, 0x1000);
 }
 
 /* version 2? */
