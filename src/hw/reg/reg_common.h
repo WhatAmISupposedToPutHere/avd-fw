@@ -3,13 +3,13 @@
 
 #include "../../util.h"
 
-#define REG(x)			((u32 *)x)
+#define REG(x)			((u32 *)(x))
 
 #define SP			0x10012000
 
 #define CM3_NVIC_ISER		REG(0xe000e100)
 
-#define CM3_MBOX_BASE		REG(0x50010000)
+#define CM3_MBOX_BASE		0x50010000
 
 /* Registers below found by R: https://github.com/ArcaneNibble/m1n1.git */
 #define CM3_MBOX_IRQEN_0	REG(CM3_MBOX_BASE + 0x10)
@@ -38,7 +38,7 @@
 #define VP_OFFSET		0x194
 #define IRQ_SUBMIT		13
 
-#define DECODE_CTRL_BASE	REG(0x41100000)
+#define DECODE_CTRL_BASE	0x41100000
 #define DECODE_STATUS(x)	REG(DECODE_CTRL_BASE + VP_OFFSET + (x * 4))
 
 #endif /* __REG_COMMON_H__ */

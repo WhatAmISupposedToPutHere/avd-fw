@@ -12,6 +12,6 @@
 #define VP_OFFSET		0x124
 #define IRQ_SUBMIT		9
 
-#define DECODE_CTRL_BASE	REG(0x40100000)
+#define DECODE_CTRL_BASE	0x40100000
 
 #endif /* __REG_V3_H__ */

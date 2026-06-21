@@ -47,11 +47,13 @@ void apply_tunables()
 	for (i = 0; i < n_tunables; i++) {
 		u32 val, old_val;
 
-		old_val = reg_read(DECODE_CTRL_BASE + avd_tunables[i].off);
+		u32 *reg = REG(DECODE_CTRL_BASE + avd_tunables[i].off);
+
+		old_val = reg_read(reg);
 		val = old_val & ~avd_tunables[i].mask;
 		val |= avd_tunables[i].val;
 		/* always write */
-		reg_write(DECODE_CTRL_BASE + avd_tunables[i].off, val);
+		reg_write(reg, val);
 	}
 }
 
