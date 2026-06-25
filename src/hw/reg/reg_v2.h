@@ -10,7 +10,7 @@
 #undef DECODE_STATUS
 
 #define SP			0x1000c000
-#define VP_OFFSET		0x60
+#define VP_OFFSET		0x4060
 #define IRQ_SUBMIT		4
 
 #define DECODE_CTRL_BASE	0x40100000
